@@ -1,4 +1,4 @@
 Warlock-Tactical
 ================
 
-A more tactical Warlock that includes gun upgrades (``` /wtl upgrades ```).
+A more tactical Warlock that includes gun upgrades (``` /wlt upgrades ```).
