@@ -1,0 +1,12 @@
+name: MGWarlockTactical
+main: com.comze_instancelabs.mgwarlocktactical.Main
+version: 1.0.0
+author: InstanceLabs
+softdepend: [Vault, MinigamesAPI]
+depend: [MinigamesAPI]
+loadbefore: [MinigamesAPI]
+commands:
+   wlt:
+      description: Main command
+      usage: /wlt [action]
+      aliases: [warlocktactical, mgwarlocktactical]
