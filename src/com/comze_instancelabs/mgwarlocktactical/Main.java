@@ -54,7 +54,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void onEnable() {
 		m = this;
-		api = MinigamesAPI.getAPI().setupAPI(this, "warlock", IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), new DefaultConfig(this, false), false);
+		api = MinigamesAPI.getAPI().setupAPI(this, "warlocktactic", IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), new DefaultConfig(this, false), false);
 		PluginInstance pinstance = api.pinstances.get(this);
 		pinstance.addLoadedArenas(loadArenas(this, pinstance.getArenasConfig()));
 		Bukkit.getPluginManager().registerEvents(this, this);
@@ -91,7 +91,16 @@ public class Main extends JavaPlugin implements Listener {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		CommandHandler ch = new CommandHandler();
-		return ch.handleArgs(this, "mgwarlock", "/" + cmd.getName(), sender, args);
+		boolean ret = ch.handleArgs(this, "mgwarlocktactical", "/" + cmd.getName(), sender, args);
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("upgrades")) {
+				if (sender instanceof Player) {
+					Player p = (Player) sender;
+					Guns.openGUI(this, p.getName());
+				}
+			}
+		}
+		return ret;
 	}
 
 	@EventHandler
