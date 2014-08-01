@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
+import com.comze_instancelabs.minigamesapi.util.Util;
 
 public class IArena extends Arena {
 
@@ -49,11 +50,15 @@ public class IArena extends Arena {
 
 	@Override
 	public void spectate(String playername) {
-		super.spectate(playername);
+
+		// respawn player
+		Util.teleportPlayerFixed(Bukkit.getPlayer(playername), this.getSpawns().get(0));
+
 		// give killer a reward:
-		if(m.lastdamager.containsKey(playername)){
+		if (m.lastdamager.containsKey(playername)) {
 			Player killer = Bukkit.getPlayer(m.lastdamager.get(playername));
-			m.pli.getRewardsInstance().giveReward(playername);
+			m.pli.getRewardsInstance().giveReward(killer.getName());
+			m.pli.getStatsInstance().addPoints(killer.getName(), 10);
 			killer.sendMessage(MinigamesAPI.getAPI().pinstances.get(m).getMessagesConfig().you_got_a_kill.replaceAll("<player>", playername));
 		}
 	}
@@ -62,8 +67,10 @@ public class IArena extends Arena {
 	public void started() {
 		for (String p_ : this.getAllPlayers()) {
 			Player p = Bukkit.getPlayer(p_);
+			m.g.giveMainGuns(p);
 			p.sendMessage(ChatColor.RED + "The platform starts decreasing in 10 seconds!");
 		}
+		final Arena a = this;
 		Bukkit.getScheduler().runTaskLater(m, new Runnable() {
 			public void run() {
 				timer = Bukkit.getScheduler().runTaskTimer(m, new Runnable() {
@@ -75,10 +82,13 @@ public class IArena extends Arena {
 								public void run() {
 									removeCircle(c, Material.AIR);
 								}
-							}, 16L); // 2L
+							}, 50L); // 16L
+						}
+						if (c < (Main.global_arenas_size / 5D)) {
+							a.stop();
 						}
 					}
-				}, 0L, 20L); // 6L
+				}, 0L, 60L); // 20L
 			}
 		}, 20L * 10);
 	}

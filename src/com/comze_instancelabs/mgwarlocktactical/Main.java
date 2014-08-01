@@ -37,6 +37,7 @@ import com.comze_instancelabs.minigamesapi.config.ArenasConfig;
 import com.comze_instancelabs.minigamesapi.config.DefaultConfig;
 import com.comze_instancelabs.minigamesapi.config.MessagesConfig;
 import com.comze_instancelabs.minigamesapi.config.StatsConfig;
+import com.comze_instancelabs.minigamesapi.guns.Gun;
 import com.comze_instancelabs.minigamesapi.guns.Guns;
 import com.comze_instancelabs.minigamesapi.util.Util;
 import com.comze_instancelabs.minigamesapi.util.Validator;
@@ -45,12 +46,20 @@ public class Main extends JavaPlugin implements Listener {
 
 	// allow custom arenas
 
+	// TODO:
+	// implement all new gun types [PARTY DONE]
+	// give credits for kills [DONE - test]
+	// implement knockback modifier and durability modifier
+	// test out speed modifier
+
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
 	static Main m = null;
 	static int global_arenas_size = 30;
 
 	HashMap<String, String> lastdamager = new HashMap<String, String>();
+
+	Guns g = null;
 
 	public void onEnable() {
 		m = this;
@@ -65,6 +74,8 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().options().copyDefaults(true);
 		this.saveConfig();
 		global_arenas_size = getConfig().getInt("config.global_arenas_size");
+
+		g = new Guns(this);
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
@@ -91,16 +102,16 @@ public class Main extends JavaPlugin implements Listener {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		CommandHandler ch = new CommandHandler();
-		boolean ret = ch.handleArgs(this, "mgwarlocktactical", "/" + cmd.getName(), sender, args);
+		ch.handleArgs(this, "mgwarlocktactic", "/" + cmd.getName(), sender, args);
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("upgrades")) {
 				if (sender instanceof Player) {
 					Player p = (Player) sender;
-					Guns.openGUI(this, p.getName());
+					g.openGUI(p.getName());
 				}
 			}
 		}
-		return ret;
+		return true;
 	}
 
 	@EventHandler
@@ -136,12 +147,41 @@ public class Main extends JavaPlugin implements Listener {
 			if (event.hasItem()) {
 				if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					final ItemStack item = event.getItem();
-					if (item.getType() == Material.STONE_HOE) {
-						shoot(item, event.getPlayer(), 0, 124, 6, 1);
+					Gun g_ = null;
+					int[] t = new int[4];
+					if (item.getType() == Material.IRON_AXE) {
+						// shoot(item, event.getPlayer(), 0, 124, 6, 1);
+						g_ = pli.getAllGuns().get("freeze");
+						if (g.pgunattributes.containsKey(p.getName())) {
+							t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+						} else {
+							t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+						}
 					} else if (item.getType() == Material.IRON_HOE) {
-						shoot(item, event.getPlayer(), 1, 242, 8, 2);
-					} else if (item.getType() == Material.DIAMOND_HOE) {
-						shoot(item, event.getPlayer(), 2, 1554, 12, 2);
+						g_ = pli.getAllGuns().get("sniper");
+						if (g.pgunattributes.containsKey(p.getName())) {
+							t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+						} else {
+							t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+						}
+					} else if (item.getType() == Material.IRON_PICKAXE) {
+						g_ = pli.getAllGuns().get("grenade");
+						if (g.pgunattributes.containsKey(p.getName())) {
+							t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+						} else {
+							t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+						}
+					} else if (item.getType() == Material.IRON_SPADE) {
+						g_ = pli.getAllGuns().get("pistol");
+						if (g.pgunattributes.containsKey(p.getName())) {
+							t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+						} else {
+							t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+						}
+					}
+					if (g_ != null) {
+						System.out.println(t[0] + " " + t[1] + " " + t[2] + " " + t[3] + " ");
+						g_.shoot(p, t[2], t[1], t[0]);
 					}
 				}
 			}
