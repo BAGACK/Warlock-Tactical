@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -29,7 +28,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
 import com.comze_instancelabs.minigamesapi.ArenaState;
-import com.comze_instancelabs.minigamesapi.Classes;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
 import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.commands.CommandHandler;
@@ -47,9 +45,9 @@ public class Main extends JavaPlugin implements Listener {
 	// allow custom arenas
 
 	// TODO:
-	// implement all new gun types [PARTY DONE]
+	// implement all new gun types [PARTLY DONE]
 	// give credits for kills [DONE - test]
-	// implement knockback modifier and durability modifier
+	// implement durability modifier
 	// test out speed modifier
 
 	MinigamesAPI api = null;
@@ -147,48 +145,56 @@ public class Main extends JavaPlugin implements Listener {
 			if (event.hasItem()) {
 				if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					final ItemStack item = event.getItem();
-					Gun g_ = null;
-					int[] t = new int[4];
-					if (item.getType() == Material.IRON_AXE) {
-						// shoot(item, event.getPlayer(), 0, 124, 6, 1);
-						g_ = pli.getAllGuns().get("freeze");
-						if (g.pgunattributes.containsKey(p.getName())) {
-							t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
-						} else {
-							t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
-						}
-					} else if (item.getType() == Material.IRON_HOE) {
-						g_ = pli.getAllGuns().get("sniper");
-						if (g.pgunattributes.containsKey(p.getName())) {
-							t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
-						} else {
-							t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
-						}
-					} else if (item.getType() == Material.IRON_PICKAXE) {
-						g_ = pli.getAllGuns().get("grenade");
-						if (g.pgunattributes.containsKey(p.getName())) {
-							t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
-						} else {
-							t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
-						}
-					} else if (item.getType() == Material.IRON_SPADE) {
-						g_ = pli.getAllGuns().get("pistol");
-						if (g.pgunattributes.containsKey(p.getName())) {
-							t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
-						} else {
-							t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
-						}
-					}
+					HashMap<Gun, int[]> t_ = this.evaluateGun(event.getItem(), p);
+					Gun g_ = (Gun) t_.keySet().toArray()[0];
+					int[] t = t_.get(g_);
 					if (g_ != null) {
-						System.out.println(t[0] + " " + t[1] + " " + t[2] + " " + t[3] + " ");
 						g_.shoot(p, t[2], t[1], t[0]);
 					}
 				}
 			}
 		}
 	}
+	
+	public HashMap<Gun, int[]> evaluateGun(ItemStack item, Player p){
+		HashMap<Gun, int[]> ret = new HashMap<Gun, int[]>();
+		Gun g_ = null;
+		int[] t = new int[4];
+		if (item.getType() == Material.IRON_AXE) {
+			// shoot(item, event.getPlayer(), 0, 124, 6, 1);
+			g_ = pli.getAllGuns().get("freeze");
+			if (g.pgunattributes.containsKey(p.getName())) {
+				t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+			} else {
+				t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+			}
+		} else if (item.getType() == Material.IRON_HOE) {
+			g_ = pli.getAllGuns().get("sniper");
+			if (g.pgunattributes.containsKey(p.getName())) {
+				t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+			} else {
+				t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+			}
+		} else if (item.getType() == Material.IRON_PICKAXE) {
+			g_ = pli.getAllGuns().get("grenade");
+			if (g.pgunattributes.containsKey(p.getName())) {
+				t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+			} else {
+				t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+			}
+		} else if (item.getType() == Material.IRON_SPADE) {
+			g_ = pli.getAllGuns().get("pistol");
+			if (g.pgunattributes.containsKey(p.getName())) {
+				t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+			} else {
+				t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
+			}
+		}
+		ret.put(g_, t);
+		return ret;
+	}
 
-	public void shoot(ItemStack item, final Player p, int id, int durability, int durability_temp, int eggcount) {
+	/*public void shoot(ItemStack item, final Player p, int id, int durability, int durability_temp, int eggcount) {
 		if (item.getDurability() < durability) { // 124
 			for (int i = 0; i < eggcount; i++) {
 				p.launchProjectile(Egg.class);
@@ -211,7 +217,7 @@ public class Main extends JavaPlugin implements Listener {
 				pusage.put(p.getName(), id);
 			}
 		}
-	}
+	}*/
 
 	@EventHandler
 	public void onEgg(PlayerEggThrowEvent event) {
@@ -246,12 +252,19 @@ public class Main extends JavaPlugin implements Listener {
 
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+		if (event.getEntity() instanceof Player && event.getDamager() instanceof Egg) {
+			Egg egg = (Egg) event.getDamager();
 			Player p = (Player) event.getEntity();
-			Player attacker = (Player) event.getDamager();
+			Player attacker = (Player) egg.getShooter();
 			if (pli.global_players.containsKey(p.getName()) && pli.global_players.containsKey(attacker.getName())) {
 				IArena a = (IArena) pli.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
+					HashMap<Gun, int[]> t_ = this.evaluateGun(attacker.getItemInHand(), attacker);
+					Gun g_ = (Gun) t_.keySet().toArray()[0];
+					int[] t = t_.get(g_);
+					if(g_ != null){
+						g_.onHit(p, t[3]);
+					}
 					lastdamager.put(p.getName(), attacker.getName());
 				}
 			}
