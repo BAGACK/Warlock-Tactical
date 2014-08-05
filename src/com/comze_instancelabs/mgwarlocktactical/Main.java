@@ -7,11 +7,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -19,13 +22,14 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.BlockIterator;
 
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
@@ -45,9 +49,6 @@ import com.comze_instancelabs.minigamesapi.util.Validator;
 public class Main extends JavaPlugin implements Listener {
 
 	// allow custom arenas
-
-	// TODO:
-	// implement all new gun types [PARTLY DONE] (grenade launcher)
 
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
@@ -157,6 +158,36 @@ public class Main extends JavaPlugin implements Listener {
 							}
 						}
 						g_.shoot(p, t[2], t[1], t[0]);
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onProjectileLand(ProjectileHitEvent e) {
+		if (e.getEntity().getShooter() instanceof Player) {
+			if (e.getEntity() instanceof Snowball) {
+				Player player = (Player) e.getEntity().getShooter();
+				if (pli.global_players.containsKey(player.getName())) {
+					BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
+					Block hit = null;
+					while (bi.hasNext()) {
+						hit = bi.next();
+						if (hit.getTypeId() != 0) {
+							break;
+						}
+					}
+					try {
+						if (Math.abs(hit.getLocation().getBlockY() - pli.global_players.get(player.getName()).getSpawns().get(0).getBlockY()) < 3 && hit.getType() == Material.ICE) {
+							hit.setTypeId(0);
+							hit.getWorld().createExplosion(hit.getLocation(), 1F);
+
+							player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
+
+						}
+					} catch (Exception ex) {
+
 					}
 				}
 			}
