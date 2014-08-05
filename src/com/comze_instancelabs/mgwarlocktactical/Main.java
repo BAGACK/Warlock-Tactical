@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -23,6 +24,7 @@ import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comze_instancelabs.minigamesapi.Arena;
@@ -45,10 +47,7 @@ public class Main extends JavaPlugin implements Listener {
 	// allow custom arenas
 
 	// TODO:
-	// implement all new gun types [PARTLY DONE]
-	// give credits for kills [DONE - test]
-	// implement durability modifier
-	// test out speed modifier
+	// implement all new gun types [PARTLY DONE] (grenade launcher)
 
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
@@ -56,6 +55,7 @@ public class Main extends JavaPlugin implements Listener {
 	static int global_arenas_size = 30;
 
 	HashMap<String, String> lastdamager = new HashMap<String, String>();
+	HashMap<String, Gun> pwait = new HashMap<String, Gun>();
 
 	Guns g = null;
 
@@ -149,14 +149,22 @@ public class Main extends JavaPlugin implements Listener {
 					Gun g_ = (Gun) t_.keySet().toArray()[0];
 					int[] t = t_.get(g_);
 					if (g_ != null) {
-						g_.shoot(p, t[2], t[1], t[0]);
+						if (pwait.containsKey(p.getName())) {
+							if (pwait.get(p.getName()) == g_) {
+								p.sendMessage(ChatColor.RED + "Please wait until the gun is reloaded again.");
+							} else {
+								g_.shoot(p, t[2], t[1], t[0]);
+							}
+						} else {
+							g_.shoot(p, t[2], t[1], t[0]);
+						}
 					}
 				}
 			}
 		}
 	}
-	
-	public HashMap<Gun, int[]> evaluateGun(ItemStack item, Player p){
+
+	public HashMap<Gun, int[]> evaluateGun(final ItemStack item, final Player p) {
 		HashMap<Gun, int[]> ret = new HashMap<Gun, int[]>();
 		Gun g_ = null;
 		int[] t = new int[4];
@@ -190,34 +198,38 @@ public class Main extends JavaPlugin implements Listener {
 				t = g.getPlayerGunAttributeLevels(this, p.getName(), g_);
 			}
 		}
+		if (item.getDurability() > 240) {
+			pwait.put(p.getName(), g_);
+			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+				public void run() {
+					if (pwait.containsKey(p.getName())) {
+						pwait.remove(p.getName());
+						for (ItemStack i : p.getInventory().getContents()) {
+							if (i != null && item != null) {
+								if (i.getType() == item.getType()) {
+									i.setDurability((short) 0);
+								}
+							}
+						}
+						p.updateInventory();
+					}
+				}
+			}, 90L / (t[1] + 1));
+		} else {
+			item.setDurability((short) (item.getDurability() + 10 / (t[1] + 1)));
+		}
 		ret.put(g_, t);
 		return ret;
 	}
 
-	/*public void shoot(ItemStack item, final Player p, int id, int durability, int durability_temp, int eggcount) {
-		if (item.getDurability() < durability) { // 124
-			for (int i = 0; i < eggcount; i++) {
-				p.launchProjectile(Egg.class);
-			}
-			item.setDurability((short) (item.getDurability() + durability_temp)); // 6
-		} else {
-			if (!pusage.containsKey(p.getName())) {
-				p.sendMessage(ChatColor.RED + "Please wait 3 seconds before using this gun again!");
-				Bukkit.getScheduler().runTaskLater(m, new Runnable() {
-					public void run() {
-						p.updateInventory();
-						p.getInventory().clear();
-						p.updateInventory();
-						Classes.getClass(m, p.getName());
-						if (pusage.containsKey(p.getName())) {
-							pusage.remove(p.getName());
-						}
-					}
-				}, 20L * 3);
-				pusage.put(p.getName(), id);
-			}
-		}
-	}*/
+	/*
+	 * public void shoot(ItemStack item, final Player p, int id, int durability, int durability_temp, int eggcount) { if (item.getDurability() <
+	 * durability) { // 124 for (int i = 0; i < eggcount; i++) { p.launchProjectile(Egg.class); } item.setDurability((short) (item.getDurability() +
+	 * durability_temp)); // 6 } else { if (!pusage.containsKey(p.getName())) { p.sendMessage(ChatColor.RED +
+	 * "Please wait 3 seconds before using this gun again!"); Bukkit.getScheduler().runTaskLater(m, new Runnable() { public void run() {
+	 * p.updateInventory(); p.getInventory().clear(); p.updateInventory(); Classes.getClass(m, p.getName()); if (pusage.containsKey(p.getName())) {
+	 * pusage.remove(p.getName()); } } }, 20L * 3); pusage.put(p.getName(), id); } } }
+	 */
 
 	@EventHandler
 	public void onEgg(PlayerEggThrowEvent event) {
@@ -262,7 +274,7 @@ public class Main extends JavaPlugin implements Listener {
 					HashMap<Gun, int[]> t_ = this.evaluateGun(attacker.getItemInHand(), attacker);
 					Gun g_ = (Gun) t_.keySet().toArray()[0];
 					int[] t = t_.get(g_);
-					if(g_ != null){
+					if (g_ != null) {
 						g_.onHit(p, t[3]);
 					}
 					lastdamager.put(p.getName(), attacker.getName());
