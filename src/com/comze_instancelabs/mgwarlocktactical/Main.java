@@ -66,6 +66,7 @@ public class Main extends JavaPlugin implements Listener {
 		pinstance.addLoadedArenas(loadArenas(this, pinstance.getArenasConfig()));
 		Bukkit.getPluginManager().registerEvents(this, this);
 		pinstance.arenaSetup = new IArenaSetup();
+		pinstance.setRewardsInstance(new IRewards(this));
 		pli = pinstance;
 
 		getConfig().addDefault("config.global_arenas_size", 30);
@@ -152,12 +153,10 @@ public class Main extends JavaPlugin implements Listener {
 						if (pwait.containsKey(p.getName())) {
 							if (pwait.get(p.getName()) == g_) {
 								p.sendMessage(ChatColor.RED + "Please wait until the gun is reloaded again.");
-							} else {
-								g_.shoot(p, t[2], t[1], t[0]);
+								return;
 							}
-						} else {
-							g_.shoot(p, t[2], t[1], t[0]);
 						}
+						g_.shoot(p, t[2], t[1], t[0]);
 					}
 				}
 			}
@@ -169,7 +168,6 @@ public class Main extends JavaPlugin implements Listener {
 		Gun g_ = null;
 		int[] t = new int[4];
 		if (item.getType() == Material.IRON_AXE) {
-			// shoot(item, event.getPlayer(), 0, 124, 6, 1);
 			g_ = pli.getAllGuns().get("freeze");
 			if (g.pgunattributes.containsKey(p.getName())) {
 				t = g.pgunattributes.get(p.getName()).containsKey(g_) ? g.pgunattributes.get(p.getName()).get(g_) : g.getPlayerGunAttributeLevels(this, p.getName(), g_);
