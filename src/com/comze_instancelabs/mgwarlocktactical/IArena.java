@@ -95,7 +95,7 @@ public class IArena extends Arena {
 
 	public void removeCircle(int cr, Material mat) {
 		int cradius_s = cr * cr;
-		Location start = this.getSpawns().get(0);
+		Location start = this.getSpawns().get(0).clone().add(0D, -1D, 0D);
 		int x = start.getBlockX();
 		int y = start.getBlockY();
 		int z = start.getBlockZ();
@@ -120,7 +120,7 @@ public class IArena extends Arena {
 		Bukkit.getScheduler().runTaskLater(m, new Runnable() {
 			public void run() {
 				c = Main.global_arenas_size;
-				a.generateArena(a.getSpawns().get(0));
+				a.generateArena(a.getSpawns().get(0).clone().add(0D, -1D, 0D));
 			}
 		}, 10L);
 	}
