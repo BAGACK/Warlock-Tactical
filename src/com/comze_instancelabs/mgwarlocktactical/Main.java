@@ -62,20 +62,26 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void onEnable() {
 		m = this;
-		api = MinigamesAPI.getAPI().setupAPI(this, "warlocktactic", IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), new DefaultConfig(this, false), false);
+		api = MinigamesAPI.getAPI().setupAPI(this, "warlocktactic", IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), new DefaultConfig(this, false), true);
 		PluginInstance pinstance = api.pinstances.get(this);
 		pinstance.addLoadedArenas(loadArenas(this, pinstance.getArenasConfig()));
 		Bukkit.getPluginManager().registerEvents(this, this);
 		pinstance.arenaSetup = new IArenaSetup();
 		pinstance.setRewardsInstance(new IRewards(this));
-		pli = pinstance;
 
+		IArenaListener t = new IArenaListener(this, pinstance);
+		api.registerArenaListenerLater(this, t);
+		pinstance.setArenaListener(t);
+
+		pli = pinstance;
 		getConfig().addDefault("config.global_arenas_size", 30);
 		getConfig().options().copyDefaults(true);
 		this.saveConfig();
 		global_arenas_size = getConfig().getInt("config.global_arenas_size");
 
 		g = new Guns(this);
+
+		g.loadGuns(this);
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
