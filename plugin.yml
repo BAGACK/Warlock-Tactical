@@ -1,10 +1,10 @@
 name: MGWarlockTactical
 main: com.comze_instancelabs.mgwarlocktactical.Main
-version: 1.0.0
+version: 1.1.0
 author: InstanceLabs
-softdepend: [Vault, MinigamesAPI]
-depend: [MinigamesAPI]
-loadbefore: [MinigamesAPI]
+softdepend: [Vault, MinigamesLib]
+depend: [MinigamesLib]
+loadbefore: [MinigamesLib]
 commands:
    wlt:
       description: Main command
