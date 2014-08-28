@@ -167,6 +167,13 @@ public class Main extends JavaPlugin implements Listener {
 						g_.shoot(p, t[2], t[1], t[0]);
 					}
 				}
+
+				if (pli.global_players.get(p.getName()).getArenaState() != ArenaState.INGAME) {
+					if (event.getItem().getType() == Material.DIAMOND_AXE) {
+						g.openGUI(p.getName());
+						event.setCancelled(true);
+					}
+				}
 			}
 		}
 	}
@@ -329,4 +336,5 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 	}
+
 }

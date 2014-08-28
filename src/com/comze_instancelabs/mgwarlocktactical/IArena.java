@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesapi.Arena;
@@ -61,6 +63,24 @@ public class IArena extends Arena {
 			m.pli.getStatsInstance().addPoints(killer.getName(), 10);
 			killer.sendMessage(MinigamesAPI.getAPI().pinstances.get(m).getMessagesConfig().you_got_a_kill.replaceAll("<player>", playername));
 		}
+	}
+
+	@Override
+	public void joinPlayerLobby(final String playername) {
+		super.joinPlayerLobby(playername);
+		Bukkit.getScheduler().runTaskLater(m, new Runnable() {
+			public void run() {
+				Player p = Bukkit.getPlayer(playername);
+				if (p != null) {
+					ItemStack upgrades_item = new ItemStack(Material.DIAMOND_AXE);
+					ItemMeta upgradesimeta = upgrades_item.getItemMeta();
+					upgradesimeta.setDisplayName(ChatColor.GREEN + "Upgrades");
+					upgrades_item.setItemMeta(upgradesimeta);
+					p.getInventory().setItem(1, upgrades_item);
+					p.updateInventory();
+				}
+			}
+		}, 30L);
 	}
 
 	@Override
