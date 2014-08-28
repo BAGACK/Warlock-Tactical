@@ -23,6 +23,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -318,4 +319,14 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 
+	@EventHandler
+	public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
+		if (event.getMessage().equalsIgnoreCase("/upgrade") || event.getMessage().equalsIgnoreCase("/upgrades")) {
+			if (pli.global_players.containsKey(event.getPlayer().getName())) {
+				g.openGUI(event.getPlayer().getName());
+				event.setCancelled(true);
+				return;
+			}
+		}
+	}
 }
