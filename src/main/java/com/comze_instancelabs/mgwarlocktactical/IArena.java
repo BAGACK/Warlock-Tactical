@@ -105,7 +105,7 @@ public class IArena extends Arena {
 							}, 50L); // 16L
 						}
 						if (c < (Main.global_arenas_size / 5D)) {
-							a.stop();
+							a.stopArena();
 						}
 					}
 				}, 0L, 60L); // 20L
