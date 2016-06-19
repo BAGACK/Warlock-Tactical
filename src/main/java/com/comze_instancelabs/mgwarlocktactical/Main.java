@@ -197,7 +197,7 @@ public class Main extends JavaPlugin implements Listener {
 							hit.setTypeId(0);
 							hit.getWorld().createExplosion(hit.getLocation(), 1F);
 
-							player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
+							player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1F, 1F);
 
 						}
 					} catch (Exception ex) {

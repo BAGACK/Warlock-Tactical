@@ -1,7 +1,7 @@
 name: MGWarlockTactical
 main: com.comze_instancelabs.mgwarlocktactical.Main
 version: 1.1.0
-author: InstanceLabs
+author: [InstanceLabs,mepeisen]
 softdepend: [Vault, MinigamesLib]
 depend: [MinigamesLib]
 loadbefore: [MinigamesLib]
