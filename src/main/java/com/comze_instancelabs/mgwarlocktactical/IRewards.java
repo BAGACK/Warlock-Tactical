@@ -11,8 +11,8 @@ public class IRewards extends Rewards {
 		super(plugin);
 	}
 
-	@Override
-	public void giveWinReward(String p, Arena a){
-		// 
-	}
+//	@Override
+//	public void giveWinReward(String p, Arena a){
+//		// 
+//	}
 }
