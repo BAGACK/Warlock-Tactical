@@ -110,7 +110,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		CommandHandler ch = new CommandHandler();
-		ch.handleArgs(this, "mgwarlocktactic", "/" + cmd.getName(), sender, args);
+		ch.handleArgs(this, MinigamesAPI.getAPI().getPermissionGamePrefix("warlocktactic"), "/" + cmd.getName(), sender, args);
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("upgrades")) {
 				if (sender instanceof Player) {
