@@ -1,4 +1,4 @@
-Warlock-Tactical [![Build Status](http://www.minigameslib.de/build.php?app=WarlockTactical&major=1)](http://www.minigameslib.de/buildref.php?app=WarlockTactical&major=1)
+Warlock-Tactical [![Build Status](http://www.minigameslib.de/build.png?app=WarlockTactical&major=1)](http://www.minigameslib.de/buildref.php?app=WarlockTactical&major=1)
 ================
 
 A more tactical Warlock that includes gun upgrades (``` /wlt upgrades ```).
