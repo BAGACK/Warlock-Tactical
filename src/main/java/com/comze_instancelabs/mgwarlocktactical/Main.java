@@ -45,6 +45,7 @@ import com.comze_instancelabs.minigamesapi.config.MessagesConfig;
 import com.comze_instancelabs.minigamesapi.config.StatsConfig;
 import com.comze_instancelabs.minigamesapi.guns.Gun;
 import com.comze_instancelabs.minigamesapi.guns.Guns;
+import com.comze_instancelabs.minigamesapi.util.PlayerPickupItemHelper;
 import com.comze_instancelabs.minigamesapi.util.Util;
 import com.comze_instancelabs.minigamesapi.util.Validator;
 
@@ -84,6 +85,8 @@ public class Main extends JavaPlugin implements Listener {
 		g = new Guns(this);
 
 		g.loadGuns(this);
+		
+		new PlayerPickupItemHelper(this, this::onPlayerPickup);
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
@@ -122,8 +125,7 @@ public class Main extends JavaPlugin implements Listener {
 		return true;
 	}
 
-	@EventHandler
-	public void onPlayerPickup(PlayerPickupItemEvent event) {
+	public void onPlayerPickup(PlayerPickupItemHelper.CustomPickupEvent event) {
 		if (pli.global_players.containsKey(event.getPlayer().getName())) {
 			event.setCancelled(true);
 		}
