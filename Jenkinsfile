@@ -32,15 +32,6 @@ pipeline {
       	}
       }
       
-      stage ('Upload') {
-        steps {
-        	script {
-        		env.BUILDTYPE = readPomVersion().endsWith("-SNAPSHOT") ? "snapshots" : "releases";
-        	}
-            sh "/srv/hudson/upload_game.sh ${env.BUILDTYPE} target 1 ColorMatch MGColorMatch-Plugin"
-      	}
-      }
-      
       stage ('Deploy') {
           when {
               expression {
